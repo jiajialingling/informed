@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Queue;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.*;
 
 /**
  * Maze Pathfinding algorithm that implements a basic, uninformed, breadth-first tree search.
@@ -20,16 +21,25 @@ public class Pathfinder {
      * @return An ArrayList of Strings representing actions that lead from the initial to
      * the goal state, of the format: ["R", "R", "L", ...]
      */
+	public static ArrayList<MazeState> graveyard = new ArrayList<MazeState>();
+	
     public static ArrayList<String> solve (MazeProblem problem) {
         // [!] Note: Hyper-Commenting below for illustrative purposes; you should not have
         // had / needed nearly as much as demonstrated below
         
         // Implementing BFS, so frontier is a Queue (which, in JCF, is an interface that
         // can be used atop a LinkedList implementation)
-        Queue<SearchTreeNode> frontier = new LinkedList<>();
+    	PriorityQueue<SearchTreeNode> frontier = new PriorityQueue<SearchTreeNode>(10, new Comparator<SearchTreeNode>()
+        {
+            public int compare(SearchTreeNode first, SearchTreeNode second) {
+                Integer intOne = first.cost;
+                Integer intTwo = second.cost;
+                return intOne.compareTo(intTwo);
+            }
+        });
         
         // Add initial state to frontier
-        frontier.add(new SearchTreeNode(problem.INITIAL_STATE, null, null));
+        frontier.add(new SearchTreeNode(problem.INITIAL_STATE, null, null, 0, ));
         
         // Continue expanding nodes as long as the frontier is not empty
         // (not strictly necessary for this assignment because a solution was
@@ -71,6 +81,7 @@ public class Pathfinder {
         return result;
     }
     
+    
 }
 
 /**
@@ -82,6 +93,7 @@ class SearchTreeNode {
     MazeState state;
     String action;
     SearchTreeNode parent;
+    int history, cost;
     
     /**
      * Constructs a new SearchTreeNode to be used in the Search Tree.
@@ -90,10 +102,12 @@ class SearchTreeNode {
      * @param action The action that *led to* this state / node.
      * @param parent Reference to parent SearchTreeNode in the Search Tree.
      */
-    SearchTreeNode (MazeState state, String action, SearchTreeNode parent) {
+    SearchTreeNode (MazeState state, String action, SearchTreeNode parent, int history, int ManhattanH) {
         this.state = state;
         this.action = action;
         this.parent = parent;
+        this.history = history;
+        this.cost = ManhattanH + history;
     }
     
 }
