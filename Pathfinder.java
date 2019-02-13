@@ -36,17 +36,14 @@ public class Pathfinder {
 		// can be used atop a LinkedList implementation)
 
 		ArrayList<String> initialToKeyPath = solveForPath(problem, true);
-		if (initialToKeyPath==null) {
+		if (initialToKeyPath == null) {
 			return null;
 		}
-		
 		ArrayList<String> keyPathToGoalPath = solveForPath(problem, false);
-		
-		System.out.println(keyPathToGoalPath);
+
 		ArrayList<String> combinedPath = new ArrayList<String>(initialToKeyPath);
 		combinedPath.addAll(keyPathToGoalPath);
-		
-		System.out.println(combinedPath);
+
 		return combinedPath;
 
 	}
@@ -58,14 +55,14 @@ public class Pathfinder {
 
 		Map<MazeState, SearchTreeNode> graveyard = new Hashtable<>();
 		PriorityQueue<SearchTreeNode> frontier = new PriorityQueue<SearchTreeNode>(10,
-			new Comparator<SearchTreeNode>() {
-				public int compare(SearchTreeNode first, SearchTreeNode second) {
-					Integer intOne = first.cost;
-					Integer intTwo = second.cost;
-					return intOne.compareTo(intTwo);
-				}
-			});
-		
+				new Comparator<SearchTreeNode>() {
+					public int compare(SearchTreeNode first, SearchTreeNode second) {
+						Integer intOne = first.cost;
+						Integer intTwo = second.cost;
+						return intOne.compareTo(intTwo);
+					}
+				});
+
 		if (lookingForKey) {
 			frontier.add(new SearchTreeNode(problem.INITIAL_STATE, null, null,
 					getFutureCostKey(problem, problem.INITIAL_STATE, problem.KEY_STATE)));
@@ -73,41 +70,33 @@ public class Pathfinder {
 			frontier.add(new SearchTreeNode(problem.KEY_STATE, null, null,
 					getFutureCost(problem, problem.KEY_STATE, problem.GOAL_STATE.get(0))));
 		}
-		
 
 		while (!frontier.isEmpty()) {
-			// System.out.println("hello");
 			// Grab the front node of the queue - this is the node we're expanding
-			SearchTreeNode expanding = frontier.poll();// ADD to graveyard!!!! right after polled it.
+			SearchTreeNode expanding = frontier.poll();
 
-			// graveyard.add((expanding.state.row.toString() +
-			// problem.state.col.toString()).parseInt());
-			// put (maze state, node)
 			graveyard.put(expanding.state, expanding);
 
-			System.out.println("x, y is " + expanding.state.row + " " + expanding.state.col);
 			// If it's a goal state, we're done!
 			if (lookingForKey) {
 				if (problem.hasKey(expanding.state)) {
 					return getPath(expanding);
 				}
-				
-			}else if (problem.isGoal(expanding.state)) {
-                return getPath(expanding);
-            }
-			
+
+			} else if (problem.isGoal(expanding.state)) {
+				return getPath(expanding);
+			}
 
 			// Otherwise, must generate children
 			Map<String, MazeState> transitions = problem.getTransitions(expanding.state);
 			// For each action:MazeState pair in the transitions...
 			for (Map.Entry<String, MazeState> transition : transitions.entrySet()) {
-				System.out.println(transition);
 				// ...create a new STN and add that to the frontier
 				if (graveyard.get(transition.getValue()) == null) {
 					if (lookingForKey) {
 						frontier.add(new SearchTreeNode(transition.getValue(), transition.getKey(), expanding,
 								getFutureCostKey(problem, expanding.state, problem.KEY_STATE)));
-					}else {
+					} else {
 						frontier.add(new SearchTreeNode(transition.getValue(), transition.getKey(), expanding,
 								getFutureCost(problem, expanding.state, problem.GOAL_STATE.get(0))));
 					}
@@ -117,7 +106,6 @@ public class Pathfinder {
 		return null;
 	}
 
-	
 	/**
 	 * Given a leaf node in the search tree (a goal), returns a solution by
 	 * traversing up the search tree, collecting actions along the way, until
@@ -135,41 +123,20 @@ public class Pathfinder {
 		Collections.reverse(result);
 		return result;
 	}
-	
-	
+
 	public static int getFutureCostKey(MazeProblem problem, MazeState state, MazeState endState) {
-		
+
 		int cost = 0;
 		int storage = Math.abs(problem.KEY_STATE.row - state.row) + Math.abs(problem.KEY_STATE.col - state.col);
-		if (storage < cost) {
-			System.out.println("go off");
-			cost = storage;
-			
-		}
-		
-		System.out.println(storage);
 		return storage;
 	}
 
-			
-		
-	public static int getFutureCost(MazeProblem problem, MazeState state, MazeState endState) { // ask for correct
-																								// formatting
-		int cost = 0;
+	public static int getFutureCost(MazeProblem problem, MazeState state, MazeState endState) {
 		int storage;
-//		for (int i = 0; i < problem.GOAL_STATE.size(); i++) {
-//			storage = Math.abs(problem.GOAL_STATE.get(i).row - state.row) + Math.abs(problem.GOAL_STATE.get(i).col - state.col);
-//			if (storage < cost) {
-//				cost = storage;
-//			}
-//		}
-//		return storage;
-
-		storage = Math.abs(problem.GOAL_STATE.get(0).row - state.row) + Math.abs(problem.GOAL_STATE.get(0).col - state.col);
-	
+		storage = Math.abs(problem.GOAL_STATE.get(0).row - state.row)
+				+ Math.abs(problem.GOAL_STATE.get(0).col - state.col);
 		return storage;
 	}
-
 }
 
 /**
@@ -196,5 +163,4 @@ class SearchTreeNode {
 		this.parent = parent;
 		this.cost = ManhattanH;
 	}
-
 }

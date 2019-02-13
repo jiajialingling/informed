@@ -140,8 +140,8 @@ public class MazeProblem {
 	 * @param state A MazeState (col, row) to test
 	 * @return int cost of moving through tile.
 	 */
-	public int getCost(MazeState state) { // check
-		switch (maze[state.row].charAt(state.col)) { // fix
+	public int getCost(MazeState state) {
+		switch (maze[state.row].charAt(state.col)) {
 		case 'I':
 			return 1;
 		case 'G':
